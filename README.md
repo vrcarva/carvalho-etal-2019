@@ -10,3 +10,5 @@ Empirical Wavelet Transform (EWT) and Variational Mode Decomposition.
 Several features are then extracted from each decomposed mode and the resulting matrixes are written in .csv files
 Files are loaded by main_classify, which splits data into training/testing sets into 5-folds for cross-validation. 
 Several classifiers are evaluated and mean performance results are presented after 10 iterations.
+
+The following packages are required: numpy, scipy, scikit-learn, pandas, matplotlib, EMD-signal, ewtpy, vmdpy.
