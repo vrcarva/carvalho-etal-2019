@@ -1,4 +1,4 @@
-# Evaluating adaptive decomposition methods for EEG signal seizure detection and classification
+# Evaluating three adaptive decomposition methods for EEG signal seizure detection and classification
 Vinícius R. Carvalho*,  Márcio F.D. Moraes, Antônio P. Braga, Eduardo M.A.M. Mendes
 Programa de Pós-Graduação em Engenharia Elétrica – Universidade Federal de Minas Gerais – Av. Antônio Carlos 6627, 31270-901, Belo Horizonte, MG, Brasil.
 Núcleo de Neurociências, Departamento de Fisiologia e Biofísica, Instituto de Ciências Biológicas, Universidade Federal de Minas Gerais, Belo Horizonte, Brazil.
