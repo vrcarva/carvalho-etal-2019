@@ -14,6 +14,7 @@ each dataset with different classifiers. This is done 10x, resulting in performa
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import time
 
 from sklearn.preprocessing import StandardScaler, MultiLabelBinarizer
 from sklearn.decomposition import PCA
@@ -29,7 +30,7 @@ from skfeature.function.similarity_based import fisher_score
 
 
 def fun_classify(inputFile, groups, FeatSelect, numFeatures,scaleFeats = 1):
-"""
+    """
     AllStatsMean, AllStatsSTD = fun_classify(inputFile, groups, FeatSelect, numFeatures)
     inputFile: the .csv file containt feature tables
     groups: The selected groups to classify. Full set is ["S","F","Z","N","O"],
@@ -39,7 +40,7 @@ def fun_classify(inputFile, groups, FeatSelect, numFeatures,scaleFeats = 1):
     Returns:
     AllStatsMean: mean performance values
     AllStatsSTD: standard deviation of performance values  
-"""
+    """
     #reads input features
     dfFeats = pd.read_csv(inputFile, sep=',',header=0)
     #only selected groups
@@ -49,11 +50,6 @@ def fun_classify(inputFile, groups, FeatSelect, numFeatures,scaleFeats = 1):
     if scaleFeats:#scale feats?
         x = StandardScaler().fit_transform(x)
     #Feature selection
-    #KBEST - TODO
-    if FeatSelect == "kbest":
-        test = SelectKBest(score_func=chi2, k=4)
-        fit = test.fit(x, y)
-        features = fit.transform(x)
     #RFE
     if FeatSelect == "RFE":
         rfeModel = SVC(kernel="linear", C=0.025,probability = True,gamma = 'scale')
@@ -83,6 +79,7 @@ def fun_classify(inputFile, groups, FeatSelect, numFeatures,scaleFeats = 1):
     AllStats = {}
     AllStatsMean = {}   
     AllStatsSTD = {}   
+    
     for name in names:
         AllStats[name] = {"Accuracy":np.zeros([realizations,K_folds]),
             "SensitivityMean":np.zeros([realizations,K_folds]),
@@ -90,26 +87,29 @@ def fun_classify(inputFile, groups, FeatSelect, numFeatures,scaleFeats = 1):
             "AUC_Mean":np.zeros([realizations,K_folds]),
             "SensitivityIctal":np.zeros([realizations,K_folds]),
             "SpecificityIctal":np.zeros([realizations,K_folds]),
-            "AUC_Ictal":np.zeros([realizations,K_folds])}    
+            "AUC_Ictal":np.zeros([realizations,K_folds]),
+            "TTtimes":np.zeros([realizations,K_folds])}  
         AllStatsMean[name] = {"Accuracy":0.,"SensitivityMean":0.,
                     "SpecificityMean":0,"AUC_Mean":0.,"SensitivityIctal":0.,
-                    "SpecificityIctal":0.,"AUC_Ictal":0.}
+                    "SpecificityIctal":0.,"AUC_Ictal":0.,"TTtimes":0.}
         AllStatsSTD[name] = {"Accuracy":0.,"SensitivityMean":0.,
                     "SpecificityMean":0,"AUC_Mean":0.,"SensitivityIctal":0.,
-                    "SpecificityIctal":0.,"AUC_Ictal":0.}    
+                    "SpecificityIctal":0.,"AUC_Ictal":0., "TTtimes":0.}    
         #for each realization
     for i in range(realizations):
         skf = StratifiedKFold(n_splits=K_folds,shuffle = True) #5-fold validation
+        
         for tupTemp,ki in zip(skf.split(x, y),range(K_folds)):
             train_idx, test_idx = tupTemp[0],tupTemp[1]
             X_train, X_test = x[train_idx], x[test_idx]
             y_train, y_test = y[train_idx], y[test_idx]   
-            
             for name, clf in zip(names, classifiers):   #for each classifier
+                tic = time.time()#check training/testing time of each classifier
                 #Fit model and predict
                 modelFit = clf.fit(X_train, y_train)
                 yPredicted = modelFit.predict(X_test)
                 probsTest = modelFit.predict_proba(X_test)
+                toc = time.time()
                 # AUC -  #ictal class as positive  
                 AUCs = roc_auc_score(MultiLabelBinarizer().fit_transform(y_test), probsTest, average = None)
                 #Sensitivity and Specificity
@@ -130,7 +130,8 @@ def fun_classify(inputFile, groups, FeatSelect, numFeatures,scaleFeats = 1):
                 AllStats[name]["SensitivityIctal"][i,ki] = TPR[0]
                 AllStats[name]["SpecificityIctal"][i,ki] = TNR[0]
                 AllStats[name]["AUC_Ictal"][i,ki] = AUCs[0]
-                
+                AllStats[name]["TTtimes"][i,ki] = toc-tic
+
     for name in names:    
         for istat in AllStats[name].keys():
             AllStats[name][istat] = np.mean(AllStats[name][istat],axis = 1)
@@ -145,7 +146,7 @@ Nmodes = [6,6,5] #number of modes for decomposition [EMD, EWT, VMD] - check for 
 groups = ["S","F","Z"] #groups to include
 
 realizations = 10#number of realizations
-K_folds = 5 #number of k-folds
+K_folds = 10 #number of k-folds
 scaleFeats = 1 #if 1, z-scores all features
 FeatSelect = "RFE" #Feature selection method: PCA, kbest (TODO), RFE, fisher. if 0, uses all features
 numFeatures = 15 #if FeatSelect = "PCA" or "RFE", chooses the number of used features
@@ -165,15 +166,14 @@ RESULTS["Orig"],RESULTS_std["Orig"] = fun_classify('FeatsOriginal - Welch.csv', 
 
 RESULTS_Export= {"EMD":0,"EWT":0,"VMD":0,"Orig":0}
 for ii in list(RESULTS.keys()):
-    AA = RESULTS[ii].applymap(lambda x:'{:s}'.format(str(round(100*x,2))))
-    BB = RESULTS_std[ii].applymap(lambda x:'{:s}'.format(str(round(100*x,2))))
+    AA = RESULTS[ii].applymap(lambda x:'{:s}'.format("%.2f"%(round(100*x,2))))
+    BB = RESULTS_std[ii].applymap(lambda x:'{:s}'.format("%.2f"%(round(100*x,2))))
 
     RESULTS_Export[ii] = AA + '+-' + BB
     
 
 RESULTS_Export["ALL"] = pd.DataFrame.append(RESULTS_Export["EMD"],RESULTS_Export["EWT"])
 RESULTS_Export["ALL"] = pd.DataFrame.append(RESULTS_Export["ALL"],RESULTS_Export["VMD"])
+RESULTS_Export["ALL"] = pd.DataFrame.append(RESULTS_Export["ALL"],RESULTS_Export["Orig"])
 
-
-
-
+    
