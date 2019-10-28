@@ -14,12 +14,12 @@ from scipy.ndimage.filters import gaussian_filter
 import ewtpy
 
 
-def plotModes(modes,Nmode, Fs = 173.61, tlimits = [0,15]):
+def plotModes(modes,Nmode, Fs = 173.61, tlimits = [0,20]):
     #plot each signal in modes (each signal = 1 collumn)
     if Nmode <= 4:
         sbSize = [2,2]
     elif Nmode <= 6:
-        sbSize = [3,2]
+        sbSize = [6,1]
     else:
         sbSize = [4,2]
     tvec = np.linspace(0,modes.shape[0]/Fs,modes.shape[0])
@@ -33,9 +33,9 @@ def plotModes(modes,Nmode, Fs = 173.61, tlimits = [0,15]):
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.spines['bottom'].set_visible(False)
-        ax.spines['left'].set_visible(False)
+        #ax.spines['left'].set_visible(False)
         ax.get_xaxis().set_ticks([])
-        ax.get_yaxis().set_ticks([])
+        #ax.get_yaxis().set_ticks([])
         plt.title('Mode %d'%(ind+1))
         plt.xlim(tlimits)
         
@@ -183,7 +183,7 @@ for kk,ind in zip(f,range(len(f))):
     emd.MAX_ITERATION = 2000
     IMFs = emd.emd(f[kk],max_imf = Nmodes[0])
     plotModes(np.flip(IMFs.T,axis = 1),Nmodes[0], tlimits = tlimits)
-    plt.suptitle('EMD, %s signal'%list(f.keys())[ind])
+    #plt.suptitle('EMD, %s signal'%list(f.keys())[ind])
     
     
     #fig EWT
@@ -195,20 +195,34 @@ for kk,ind in zip(f,range(len(f))):
                           lengthFilter = FFTregLen,
                           sigmaFilter = gaussSigma )
     plotModes(ewt,Nmodes[1], tlimits = tlimits)
-    plt.suptitle('EWT, %s signal'%list(f.keys())[ind])
+    #plt.suptitle('EWT, %s signal'%list(f.keys())[ind])
     
     #fig VMD
     DC = np.mean(f[kk])   #          % no DC part imposed
     vmd,_,_ = VMD(f[kk], alpha, tau, Nmodes[2], DC, init, tol)
     plotModes(vmd.T,Nmodes[2], tlimits = tlimits)
-    plt.suptitle('VMD, %s signal'%list(f.keys())[ind])
+    #plt.suptitle('VMD, %s signal'%list(f.keys())[ind])
         
+#
+for fi in f:
+    plt.figure()
+    ax = plt.subplot(111)
+    ax.plot(t,f[fi],'k')
+    ax.autoscale(enable=True, axis='x', tight=True)  
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.get_xaxis().set_ticks([])
+    plt.xlim(tlimits)
+    plt.locator_params(axis='y', nbins=4)
+    plt.ylabel("$\mu$V")
+    
         
     
 #%% EWT tests
 
 # General parameters
-Nmodes = [5,5,5] #number of modes for decomposition [EMD, EWT, VMD]
+Nmodes = [6,6,5] #number of modes for decomposition [EMD, EWT, VMD]
 
 #EWT parameters
 FFTreg = 'gaussian'
@@ -250,7 +264,7 @@ for kk,ind in zip(f,range(len(f))):
         ax.plot([bb,bb],[0,max(presig)],'--r')
     
 
-#%% Test figure: feature projection
+#%% Interactive plots: feature projection
     
 import pandas as pd
 import numpy as np
