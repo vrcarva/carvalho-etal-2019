@@ -7,9 +7,10 @@ Núcleo de Neurociências, Departamento de Fisiologia e Biofísica, Instituto de
 
 Scripts to decompose EEG signals from the Bonn University [[1]](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.64.061907) and NSC-ND [[2]](https://doi.org/10.1016/j.eswa.2011.09.093) datasets, according to five methods: Empirical Mode Decomposition (EMD), Empirical Wavelet Transform (EWT) and Variational Mode Decomposition. 
 
-Folder "data" should contain downloaded data from two datasets:  
+Two datasets:
 1. [University of Bonn EEG seizure dataset](http://epileptologie-bonn.de/cms/front_content.php?idcat=193&lang=3&changelang=3)
 2. [Neurology & Sleep Centre, Hauz Khas, New Delhi dataset](https://www.researchgate.net/publication/308719109_EEG_Epilepsy_Datasets)
+Download EEG data to (1) BonnDataset/data/ and (2) NSC_ND/data/
 
 "main_feats.py" opens and decomposes each EEG into N modes with [EMD](https://doi.org/10.1098/rspa.1998.0193), [EEMD](https://doi.org/10.1142/S1793536909000047), [CEEMDAN](https://doi.org/10.1016/j.bspc.2014.06.009), [VMD](https://doi.org/10.1109/TSP.2013.2288675) and [EWT](https://doi.org/10.1109/TSP.2013.2265222). Features from each mode are then extracted and written in .csv files.  
 
