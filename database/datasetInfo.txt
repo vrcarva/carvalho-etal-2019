@@ -1,4 +1,4 @@
-Include here folders (S,F,N,Z,O) containing files from the bonn university dataset, available at http://epileptologie-bonn.de/cms/front_content.php?idcat=193. 
+Include here folders BonnDataset/(S,F,N,Z,O) containing files from the bonn university dataset, available at http://epileptologie-bonn.de/cms/front_content.php?idcat=193. 
 
 
 SET A	Z.zip 	with	Z000.txt - Z100.txt	(564 kB) NORMAL
@@ -6,3 +6,6 @@ SET B 	O.zip	with	O000.txt - O100.txt	(611 kB) NORMAL
 SET C	N.zip 	with	N000.txt - N100.txt 	(560 kB) SEIZURE FREE
 SET D	F.zip  	with	F000.txt - F100.txt 	(569kB) INTERICTAL
 SET E	S.zip 	with	S000.txt - S100.txt 	(747kB) ICTAL
+
+For the second dataset (https://www.researchgate.net/publication/308719109_EEG_Epilepsy_Datasets), download and include in the 
+"NSC_ND" folder
