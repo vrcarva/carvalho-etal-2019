@@ -11,8 +11,8 @@ complete EEMD with adaptive noise (CEEMDAN), Empirical Wavelet Transform (EWT) a
 Several features are then extracted from each decomposed mode and the resulting matrixes are
 written in .csv files.
 
-University of Bonn dataset should be on the folder"./data/BonnDataset/"
-Neurology & Sleep Centre ND data should be on the folder "./data/NSC_ND"
+University of Bonn dataset should be on the folder"./BonnDataset/data/"
+Neurology & Sleep Centre ND data should be on the folder "./NSC_ND/data/"
 
 @author: Vinicius Carvalho
 vrcarva@ufmg.br
