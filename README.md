@@ -5,7 +5,7 @@ Núcleo de Neurociências, Departamento de Fisiologia e Biofísica, Instituto de
 
 *vrcarva@ufmg.br
 
-Scripts to decompose EEG signals from the Bonn University [[1]](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.64.061907) and NSC-ND [[2]](https://doi.org/10.1016/j.eswa.2011.09.093) datasets, according to five methods: Empirical Mode Decomposition (EMD), Empirical Wavelet Transform (EWT) and Variational Mode Decomposition. 
+Scripts to decompose EEG signals from the Bonn University [[1]](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.64.061907) and NSC-ND [[2]](https://doi.org/10.1016/j.eswa.2011.09.093) datasets, according to five methods: Empirical Mode Decomposition (EMD) and its extensions (EEMD, CEEMDAN), Empirical Wavelet Transform (EWT) and Variational Mode Decomposition. 
 
 Two datasets:
 1. [University of Bonn EEG seizure dataset](http://epileptologie-bonn.de/cms/front_content.php?idcat=193&lang=3&changelang=3)
@@ -19,13 +19,14 @@ Download EEG data to (1) BonnDataset/data/ and (2) NSC_ND/data/
 "main_figs.py" plots figures that appear on the manuscript
 The following packages are required: numpy, scipy, scikit-learn, pandas, matplotlib, [pyEMD](https://pypi.org/project/EMD-signal/), [ewtpy](https://pypi.org/project/ewtpy/), [vmdpy](https://pypi.org/project/vmdpy/), seaborn.
 
-Preprint available:
-Evaluating three different adaptive decomposition methods for EEG signal seizure detection and classification
-Vinícius Rezende Carvalho, Márcio F.D. Moraes, Antônio Pádua Braga, Eduardo M.A.M. Mendes
-bioRxiv 691055; doi: https://doi.org/10.1101/691055
-
-
-[1] R. Andrzejak, K. Lehnertz, F. Mormann, C. Rieke, P. David, C. Elger, Indications of nonlinear deterministic and finite-dimensional structures in time series of brain electrical activity: Dependence on recording region and brain state, Phys. Rev. E. 64 (2001) 061907. doi:10.1103/PhysRevE.64.061907.  
-[2] T.K. Gandhi, P. Chakraborty, G.G. Roy, B.K. Panigrahi, Discrete harmony search based expert model for epileptic seizure detection in electroencephalography, Expert Syst. Appl. 39 (2012) 4055–4062. doi:10.1016/j.eswa.2011.09.093.
+Citation:
+Vinícius R. Carvalho, Márcio F.D. Moraes, Antônio P. Braga, Eduardo M.A.M. Mendes,
+Evaluating five different adaptive decomposition methods for EEG signal seizure detection and classification,
+Biomedical Signal Processing and Control,
+Volume 62,
+2020,
+102073,
+ISSN 1746-8094,
+https://doi.org/10.1016/j.bspc.2020.102073.  
 
 
