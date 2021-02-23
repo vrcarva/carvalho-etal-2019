@@ -89,19 +89,19 @@ def featExtract(f,Fs, welchWin = 1024):
     return features,featLabels
 
 #load and extract features from all signals from the chosen database
-def fun_loadExFeats(dbParams,ri,idx, item,Fs,Nchann,LPcutoff,Nmodes, FFTregLen = 25, gaussSigma = 5,FFTreg = 'gaussian'):
+def fun_loadExFeats(dSet,ri,idx, item,Fs,LPcutoff,Nmodes, FFTregLen = 25, gaussSigma = 5,FFTreg = 'gaussian'):
     #load eeg
     featNames = ["Group","decTime"]
     featsTuple = {"EMD":0,"EEMD":0,"CEEMDAN":0,"EWT":0,"VMD":0,"Orig":0}
-    if dbase == "NSC_ND":
-        fLoad = loadmat("%s/data/%s/%s%d"%(dbase,item,item,ri+1))
+    if dSet == "NSC_ND":
+        fLoad = loadmat("%s/data/%s/%s%d"%(dSet,item,item,ri+1))
         f = fLoad[item][:,0]
         ltemp = int(np.ceil(f.size/2)) #to behave the same as matlab's round
         fMirr =  np.append(np.flip(f[0:ltemp-1],axis = 0),f)  
         fMirr = np.append(fMirr,np.flip(f[-ltemp-1:-1],axis = 0))
         f = np.copy(fMirr)
-    if dbase == "BonnDataset":
-        f = np.loadtxt("%s/data/%s/%s%.3d.txt"%(dbase,item,item,ri+1))
+    if dSet == "BonnDataset":
+        f = np.loadtxt("%s/data/%s/%s%.3d.txt"%(dSet,item,item,ri+1))
 
     #preprocessing - LP filter and remove DC
     f = f - np.mean(f)
@@ -251,10 +251,10 @@ for Nmodes in [2,3,4,5,6,7,8]:#number of modes for decomposition 2 to 8
             print(item)
             #for each recording 
             if par_jobs == 1:
-                ParforOut = [fun_loadExFeats(paramsData[dbase],ri,idx, item,Fs,Nchann,LPcutoff,Nmodes) for ri in range(paramsData[dbase]["Nregs"])]
+                ParforOut = [fun_loadExFeats(dbase,ri,idx, item,Fs,LPcutoff,Nmodes) for ri in range(paramsData[dbase]["Nregs"])]
             else:
                 ParforOut = Parallel(n_jobs=10,max_nbytes=None)(
-                        delayed(fun_loadExFeats)(paramsData[dbase],ri,idx, item,Fs,Nchann,LPcutoff,Nmodes) for ri in range(paramsData[dbase]["Nregs"]))
+                        delayed(fun_loadExFeats)(dbase,ri,idx, item,Fs,LPcutoff,Nmodes) for ri in range(paramsData[dbase]["Nregs"]))
     
             featsEMD.append(np.array([ParforOut[ri][1]["EMD"] for ri in  range(paramsData[dbase]["Nregs"])]))
             featsEEMD.append(np.array([ParforOut[ri][1]["EEMD"] for ri in  range(paramsData[dbase]["Nregs"])]))
@@ -326,4 +326,3 @@ for Nmodes in [2,3,4,5,6,7,8]:#number of modes for decomposition 2 to 8
                  fp6.write(','.join(featNames[:2+Nfeats]) + '\n')
                  np.savetxt(fp6, featsOrig, '%s', ',')
             fp6.close()
-        
