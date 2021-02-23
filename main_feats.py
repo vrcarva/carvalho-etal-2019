@@ -24,12 +24,11 @@ from PyEMD import EMD, EEMD, CEEMDAN
 from scipy.stats import skew,kurtosis
 from scipy.io import loadmat
 from joblib import Parallel, delayed
-import pandas as pd
 import time
 import ewtpy
 from vmdpy import VMD
-import matplotlib.pyplot as plt
-import os
+#import matplotlib.pyplot as plt
+#import pandas as pd
 
 #Feature extraction fucntion
 def featExtract(f,Fs, welchWin = 1024):
@@ -42,7 +41,7 @@ def featExtract(f,Fs, welchWin = 1024):
         features: calculated features
         featLabels: Feature labels - ["AM","BM","ent","pow","Cent","pk","freq","skew","kurt","Hmob","Hcomp"]
     """
-    from scipy.ndimage.filters import gaussian_filter
+    #from scipy.ndimage.filters import gaussian_filter
 
     #AM and BM
     fhilbert = signal.hilbert(f)#hilbert transform
@@ -220,6 +219,7 @@ paramsData = {"BonnDataset": {"Nregs": 100, "Fs":173.61,
                          "FFTregLen": 10, "gaussSigma": 2}}#EWT parameters (for regularized spectrum)
 
 saveFeats = 1 #if 1, save features to .csv files
+par_jobs = 1# if >1, sets the number of jobs for parallel processing 
 
 #VMD parameters 
 alpha = 2000 #      % moderate bandwidth constraint
@@ -250,10 +250,11 @@ for Nmodes in [2,3,4,5,6,7,8]:#number of modes for decomposition 2 to 8
         for idx, item in enumerate(paramsData[dbase]["groups"]): #for each group/class
             print(item)
             #for each recording 
-            #ParforOut = [fun_loadExFeats(paramsData[dbase],ri,idx, item,Fs,Nchann,LPcutoff,Nmodes) for ri in range(paramsData[dbase]["Nregs"])]
-         
-            ParforOut = Parallel(n_jobs=10,max_nbytes=None)(
-                    delayed(fun_loadExFeats)(paramsData[dbase],ri,idx, item,Fs,Nchann,LPcutoff,Nmodes) for ri in range(paramsData[dbase]["Nregs"]))
+            if par_jobs == 1:
+                ParforOut = [fun_loadExFeats(paramsData[dbase],ri,idx, item,Fs,Nchann,LPcutoff,Nmodes) for ri in range(paramsData[dbase]["Nregs"])]
+            else:
+                ParforOut = Parallel(n_jobs=10,max_nbytes=None)(
+                        delayed(fun_loadExFeats)(paramsData[dbase],ri,idx, item,Fs,Nchann,LPcutoff,Nmodes) for ri in range(paramsData[dbase]["Nregs"]))
     
             featsEMD.append(np.array([ParforOut[ri][1]["EMD"] for ri in  range(paramsData[dbase]["Nregs"])]))
             featsEEMD.append(np.array([ParforOut[ri][1]["EEMD"] for ri in  range(paramsData[dbase]["Nregs"])]))
@@ -326,4 +327,3 @@ for Nmodes in [2,3,4,5,6,7,8]:#number of modes for decomposition 2 to 8
                  np.savetxt(fp6, featsOrig, '%s', ',')
             fp6.close()
         
-         
